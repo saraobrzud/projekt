@@ -9,6 +9,7 @@ use Form\LoginType;
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Form\RegisterForm;
 
 /**
  * Class AuthController.
@@ -26,6 +27,9 @@ class AuthController implements ControllerProviderInterface
             ->bind('auth_login');
         $controller->get('logout', [$this, 'logoutAction'])
             ->bind('auth_logout');
+        $controller->get('register', [$this, 'registerAction'])
+            ->method('GET|POST')
+            ->bind('auth_register');
 
         return $controller;
     }
@@ -64,5 +68,26 @@ class AuthController implements ControllerProviderInterface
         $app['session']->clear();
 
         return $app['twig']->render('auth/logout.html.twig', []);
+    }
+
+    public function registerAction(Application $app, Request $request)
+    {
+        $form = $app['form.factory']->createBuilder(RegisterForm::class)->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $data = $form->getData();
+            //dump($data['password']);
+            $data['password'] = $app['security.encoder.bcrypt']->encodePassword($data['password'], '');
+            //dump($data['password']);exit;
+            $data['role_id'] = 1;
+            $conn = $app['db'];
+            $conn->insert('users', $data);
+            echo 'Dodano usera';
+        }
+
+        $this->view['form'] = $form->createView();
+        return $app['twig']->render('auth/register.html.twig', array('form' => $form->createView()));
     }
 }

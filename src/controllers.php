@@ -7,9 +7,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Controller\HelloController;
 use Controller\HomeController;
-use Controller\RegisterController;
 use Controller\GunsController;
 use Controller\AuthController;
+use Controller\PollController;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
@@ -22,7 +22,6 @@ use Controller\AuthController;
 
 $app->mount('/', new HomeController());
 
-$app->mount('/register', new RegisterController());
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     if ($app['debug']) {
@@ -47,3 +46,5 @@ $app->mount('/hello', new HelloController());
 $app->mount('/guns', new GunsController());
 
 $app->mount('/auth', new AuthController());
+
+$app->mount('/poll', new PollController());

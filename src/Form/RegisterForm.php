@@ -12,69 +12,64 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 
 class RegisterForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        return $builder->add(
+
+        $builder->add(
             'login',
-            'text',
-            array(
-                'constraints' => array(
+            TextType::class,
+            [
+                'label' => 'label.login',
+                'required' => true,
+                'attr' => [
+                    'max_length' => 32,
+
+                ],
+                'constraints' => [
                     new Assert\NotBlank(),
-                    new Assert\Length(array('min' => 5, 'max' => 16))
-                ),
-                'attr' => array(
-                    'class' => 'form-control',
-                    'placeholder' => 'Login'
-                )
-            )
-        )
-            ->add(
-                'password',
-                'repeated',
-                array(
-                    'type' => 'password',
-                    'invalid_message' => 'The password fields must match.',
-                    'options' => array(),
-                    'required' => true,
-                    'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Length(array('min' => 8))
+                    new Assert\Length(
+                        [
+                            'min' => 8,
+                            'max' => 32,
+                        ]
                     ),
-                    'first_options'  => array(
-                        'label' => 'Password',
-                        'attr' => array(
-                            'class' => 'form-control',
-                            'placeholder' => 'Password'
-                        )
+                ],
+            ]
+        );
+        $builder->add(
+            'password',
+            PasswordType::class,
+            [
+                'label' => 'label.password',
+                'required' => true,
+                'attr' => [
+                    'max_length' => 32,
+
+                ],
+                'constraints' => [
+                    new Assert\NotBlank(),
+                    new Assert\Length(
+                        [
+                            'min' => 8,
+                            'max' => 32,
+                        ]
                     ),
-                    'second_options' => array(
-                        'label' => 'Repeat',
-                        'attr' => array(
-                            'class' => 'form-control',
-                            'placeholder' => 'Repeat Password'
-                        )
-                    ),
-                )
-            );
+                ],
+            ]
+        );
     }
 
-    /**
-     * Gets form name.
-     *
-     * @access public
-     *
-     * @return string
-     */
-    public function getName()
+        /**
+         * {@inheritdoc}
+         */
+        public function getBlockPrefix()
     {
-        return 'register';
-    }
-
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
+        return 'register_type';
     }
 }
